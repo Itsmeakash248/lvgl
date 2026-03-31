@@ -15,7 +15,11 @@
 #include "lv_os_private.h"
 #if LV_USE_OS == LV_OS_FREERTOS
 
-#include "atomic.h"
+#ifdef ESP_PLATFORM
+    #include "freertos/atomic.h"
+#else
+    #include "atomic.h"
+#endif
 
 #include "../tick/lv_tick.h"
 #include "../misc/lv_log.h"
@@ -390,7 +394,7 @@ lv_result_t lv_thread_sync_signal_isr(lv_thread_sync_t * pxCond)
 
 void lv_freertos_task_switch_in(const char * name)
 {
-    if(lv_strcmp(name, "IDLE")) globals->freertos_idle_task_running = false;
+    if(lv_strncmp(name, "IDLE", 4)) globals->freertos_idle_task_running = false;
     else globals->freertos_idle_task_running = true;
 
     globals->freertos_task_switch_timestamp = lv_tick_get();
